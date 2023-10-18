@@ -82,7 +82,7 @@ app.post("/api/message", async (req, res) => {
 
 
 // CRON JOBS
-setInterval(async () => {
+const cleanDB = async () => {
     try {
         const chats1 = await Message.find({ temporal: true });
         const chats2 = await Message.find({ temporal: false });
@@ -103,10 +103,14 @@ setInterval(async () => {
                 }
             });
         }
+
+        setTimeout(cleanDB, 10000);
     } catch (err) {
         console.log(err);
     }
-}, 10000)
+}
+
+cleanDB();
 
 
 const PORT = 5000;
