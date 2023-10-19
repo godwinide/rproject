@@ -90,7 +90,8 @@ const cleanDB = async () => {
         if (chats1) {
             chats1.forEach(async c => {
                 if (((Date.now() - c.timeStamp) / 1000) > 30) {
-                    await bot.deleteMessage(c.chatId, c.telMsgID);
+                    await bot.deleteMessage(c.chatId, c.telMsgID)
+                        .catch(err => console.log(err));
                     await Message.deleteOne({ msgID: c.msgID })
                 }
             });
