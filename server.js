@@ -4,11 +4,12 @@ const express = require("express");
 const cors = require("cors");
 const Chat = require("./model/Chats");
 const Message = require("./model/Message");
-const cron = require('node-cron');
 
 const app = express();
 
 const TelegramBot = require('node-telegram-bot-api');
+const Table = require("./model/Table");
+const Result = require("./model/Result");
 const bot = new TelegramBot(process.env.botToken, { polling: true });
 bot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;
@@ -34,7 +35,9 @@ app.post("/api/message", async (req, res) => {
         const {
             message,
             msgID,
-            type: msgType
+            type,
+            resultType,
+            tableName
         } = req.body;
 
         if (message) {
@@ -42,14 +45,19 @@ app.post("/api/message", async (req, res) => {
             const chatIds = await Chat.find({});
             const isSent = await Message.findOne({ msgID });
 
+            const tableId = tableName?.replace(/ /g, "").toLowerCase()
+
+            const table = await Table.findOne({ tableId });
+
             if (isSent) {
+                console.log("here")
                 return res.status(200).json({ success: true });
             }
 
             chatIds.forEach((chatId) => {
                 bot.sendMessage(chatId.chatId, message)
                     .then(async sentmessage => {
-                        if (msgType == 'ready') {
+                        if (type == 'ready') {
                             const newMsg = new Message({
                                 msgID,
                                 temporal: true,
@@ -59,6 +67,43 @@ app.post("/api/message", async (req, res) => {
                             });
                             await newMsg.save();
                         } else {
+                            if (resultType === "won" || resultType === "loss") {
+                                if (table) {
+                                    const trialPosition = table.trialPostion;
+
+                                    const newResult = new Result({
+                                        tableId,
+                                        resultType: resultType === "won" ? true : false,
+                                        trialPosition,
+                                        date: Date.now()
+                                    });
+
+                                    await Table.updateOne({ tableId }, {
+                                        trialPosition: resultType === "won" ? 1 : trialPosition + 1
+                                    });
+
+                                    await newResult.save();
+
+                                }
+                                else {
+                                    const newTable = new Table({
+                                        tableId,
+                                        tableName,
+                                        trialPostion: 1
+                                    });
+
+                                    const newResult = new Result({
+                                        tableId,
+                                        resultType: resultType === "won" ? true : false,
+                                        trialPosition: 1,
+                                        date: Date.now()
+                                    });
+
+                                    await newResult.save();
+                                    await newTable.save();
+                                }
+                            }
+
                             const newMsg = new Message({
                                 msgID,
                                 temporal: false,
