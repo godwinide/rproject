@@ -79,7 +79,7 @@ app.post("/api/message", async (req, res) => {
                                     });
 
                                     await Table.updateOne({ tableId }, {
-                                        trialPosition: resultType === "won" ? 1 : trialPosition + 1
+                                        trialPostion: resultType === "won" ? 1 : trialPosition + 1
                                     });
 
                                     await newResult.save();
