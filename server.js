@@ -74,7 +74,7 @@ app.post("/api/message", async (req, res) => {
                                     const newResult = new Result({
                                         tableId,
                                         resultType: resultType === "won" ? true : false,
-                                        trialPosition,
+                                        trialPostion: trialPosition,
                                         date: Date.now()
                                     });
 
@@ -95,7 +95,7 @@ app.post("/api/message", async (req, res) => {
                                     const newResult = new Result({
                                         tableId,
                                         resultType: resultType === "won" ? true : false,
-                                        trialPosition: 1,
+                                        trialPostion: 1,
                                         date: Date.now()
                                     });
 
