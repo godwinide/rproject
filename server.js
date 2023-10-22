@@ -45,6 +45,9 @@ app.post("/api/message", async (req, res) => {
             const chatIds = await Chat.find({});
             const isSent = await Message.findOne({ msgID });
 
+            const tableId = tableName?.replace(/ /g, "").toLowerCase()
+
+            const table = await Table.findOne({ tableId });
 
             if (isSent) {
                 console.log("here")
@@ -54,10 +57,6 @@ app.post("/api/message", async (req, res) => {
             chatIds.forEach((chatId) => {
                 bot.sendMessage(chatId.chatId, message)
                     .then(async sentmessage => {
-
-                        const tableId = tableName?.replace(/ /g, "").toLowerCase()
-                        const table = await Table.findOne({ tableId });
-
                         if (type == 'ready') {
                             const newMsg = new Message({
                                 msgID,
@@ -75,12 +74,12 @@ app.post("/api/message", async (req, res) => {
                                     const newResult = new Result({
                                         tableId,
                                         resultType: resultType === "won" ? true : false,
-                                        trialPostion: trialPosition,
+                                        trialPosition,
                                         date: Date.now()
                                     });
 
                                     await Table.updateOne({ tableId }, {
-                                        trialPostion: resultType === "won" ? 1 : trialPosition + 1
+                                        trialPosition: resultType === "won" ? 1 : trialPosition + 1
                                     });
 
                                     await newResult.save();
@@ -96,7 +95,7 @@ app.post("/api/message", async (req, res) => {
                                     const newResult = new Result({
                                         tableId,
                                         resultType: resultType === "won" ? true : false,
-                                        trialPostion: 1,
+                                        trialPosition: 1,
                                         date: Date.now()
                                     });
 
