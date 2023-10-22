@@ -3,11 +3,13 @@ const { Schema, model } = require("mongoose");
 const TableSchema = new Schema({
     tableId: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     tableName: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     trialPostion: {
         type: Number,

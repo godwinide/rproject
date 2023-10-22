@@ -45,9 +45,6 @@ app.post("/api/message", async (req, res) => {
             const chatIds = await Chat.find({});
             const isSent = await Message.findOne({ msgID });
 
-            const tableId = tableName?.replace(/ /g, "").toLowerCase()
-
-            const table = await Table.findOne({ tableId });
 
             if (isSent) {
                 console.log("here")
@@ -57,6 +54,10 @@ app.post("/api/message", async (req, res) => {
             chatIds.forEach((chatId) => {
                 bot.sendMessage(chatId.chatId, message)
                     .then(async sentmessage => {
+
+                        const tableId = tableName?.replace(/ /g, "").toLowerCase()
+                        const table = await Table.findOne({ tableId });
+
                         if (type == 'ready') {
                             const newMsg = new Message({
                                 msgID,
