@@ -67,7 +67,7 @@ app.post("/api/message", async (req, res) => {
                     await newResult.save();
 
                     await Table.updateOne({ tableId }, {
-                        trialPostion: resultType === "won" ? 1 : trialPosition
+                        trialPostion: resultType === "won" ? 1 : trialPosition + 1
                     });
 
 
