@@ -50,9 +50,47 @@ app.post("/api/message", async (req, res) => {
             const table = await Table.findOne({ tableId });
 
             if (isSent) {
-                console.log("here")
                 return res.status(200).json({ success: true });
             }
+
+            if (resultType === "won" || resultType === "loss") {
+                if (table) {
+                    const trialPosition = table.trialPostion;
+
+                    const newResult = new Result({
+                        tableId,
+                        resultType: resultType === "won" ? true : false,
+                        trialPostion: trialPosition + 1,
+                        date: Date.now()
+                    });
+
+                    await newResult.save();
+
+                    await Table.updateOne({ tableId }, {
+                        trialPostion: resultType === "won" ? 1 : trialPosition
+                    });
+
+
+                }
+                else {
+                    const newTable = new Table({
+                        tableId,
+                        tableName,
+                        trialPostion: 1
+                    });
+
+                    const newResult = new Result({
+                        tableId,
+                        resultType: resultType === "won" ? true : false,
+                        trialPosition: 1,
+                        date: Date.now()
+                    });
+
+                    await newTable.save();
+                    await newResult.save();
+                }
+            }
+
 
             chatIds.forEach((chatId) => {
                 bot.sendMessage(chatId.chatId, message)
@@ -67,43 +105,6 @@ app.post("/api/message", async (req, res) => {
                             });
                             await newMsg.save();
                         } else {
-                            if (resultType === "won" || resultType === "loss") {
-                                if (table) {
-                                    const trialPosition = table.trialPostion;
-
-                                    const newResult = new Result({
-                                        tableId,
-                                        resultType: resultType === "won" ? true : false,
-                                        trialPosition,
-                                        date: Date.now()
-                                    });
-
-                                    await Table.updateOne({ tableId }, {
-                                        trialPosition: resultType === "won" ? 1 : trialPosition + 1
-                                    });
-
-                                    await newResult.save();
-
-                                }
-                                else {
-                                    const newTable = new Table({
-                                        tableId,
-                                        tableName,
-                                        trialPostion: 1
-                                    });
-
-                                    const newResult = new Result({
-                                        tableId,
-                                        resultType: resultType === "won" ? true : false,
-                                        trialPosition: 1,
-                                        date: Date.now()
-                                    });
-
-                                    await newResult.save();
-                                    await newTable.save();
-                                }
-                            }
-
                             const newMsg = new Message({
                                 msgID,
                                 temporal: false,
@@ -146,6 +147,7 @@ const cleanDB = async () => {
             chats2.forEach(async c => {
                 if (((Date.now() - c.timeStamp) / 1000) > 120) {
                     await Message.deleteOne({ msgID: c.msgID })
+                        .catch(err => console.log(err));
                 }
             });
         }

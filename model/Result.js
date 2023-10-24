@@ -12,7 +12,7 @@ const ResultSchema = new Schema({
     trialPostion: {
         type: Number,
         required: false,
-        default: 1
+        default: 0
     },
     date: {
         type: String,
