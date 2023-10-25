@@ -14,7 +14,11 @@ const TableSchema = new Schema({
     trialPostion: {
         type: Number,
         required: false,
-        default: 0
+        default: 1
+    },
+    lastUpdated: {
+        type: Number,
+        required: true
     }
 });
 

@@ -4,9 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const Chat = require("./model/Chats");
 const Message = require("./model/Message");
-
 const app = express();
-
 const TelegramBot = require('node-telegram-bot-api');
 const Table = require("./model/Table");
 const Result = require("./model/Result");
@@ -67,7 +65,8 @@ app.post("/api/message", async (req, res) => {
                     await newResult.save();
 
                     await Table.updateOne({ tableId }, {
-                        trialPostion: resultType === "won" ? 1 : trialPosition
+                        trialPostion: resultType === "won" ? 1 : trialPosition,
+                        lastUpdated: Date.now()
                     });
 
 
@@ -76,7 +75,8 @@ app.post("/api/message", async (req, res) => {
                     const newTable = new Table({
                         tableId,
                         tableName,
-                        trialPostion: 1
+                        trialPostion: 1,
+                        lastUpdated: Date.now()
                     });
 
                     const newResult = new Result({
