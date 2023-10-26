@@ -43,29 +43,28 @@ app.post("/api/message", async (req, res) => {
             const chatIds = await Chat.find({});
             const isSent = await Message.findOne({ msgID });
 
-            const tableId = tableName?.replace(/ /g, "").toLowerCase()
-
-            const table = await Table.findOne({ tableId });
-
             if (isSent) {
                 return res.status(200).json({ success: true });
             }
 
             if (resultType === "won" || resultType === "loss") {
+
+                const tableId = tableName?.replace(/ /g, "").toLowerCase()
+                const table = await Table.findOne({ tableId });
+
                 if (table) {
-                    const trialPosition = table.trialPostion;
 
                     const newResult = new Result({
                         tableId,
                         resultType: resultType === "won" ? true : false,
-                        trialPostion: trialPosition + 1,
+                        trialPostion: table.trialPostion,
                         date: Date.now()
                     });
 
                     await newResult.save();
 
                     await Table.updateOne({ tableId }, {
-                        trialPostion: resultType === "won" ? 1 : trialPosition,
+                        trialPostion: resultType === "won" ? 1 : table.trialPostion + 1,
                         lastUpdated: Date.now()
                     });
 
