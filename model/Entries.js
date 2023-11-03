@@ -9,6 +9,10 @@ const EntrySchema = new Schema({
         type: Array,
         required: true
     },
+    numbers: {
+        type: Array,
+        required: true
+    },
     sent: {
         type: Boolean,
         required: false,

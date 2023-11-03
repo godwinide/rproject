@@ -38,7 +38,8 @@ app.post("/api/message", async (req, res) => {
             type,
             resultType,
             tableName,
-            prompt
+            prompt,
+            numbers
         } = req.body;
 
         if (message) {
@@ -50,7 +51,8 @@ app.post("/api/message", async (req, res) => {
             if (prompt) {
                 const newEntry = new Entry({
                     tableName,
-                    prompt
+                    prompt,
+                    numbers
                 });
                 await newEntry.save();
             }
