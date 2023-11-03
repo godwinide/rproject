@@ -8,7 +8,9 @@ const app = express();
 const TelegramBot = require('node-telegram-bot-api');
 const Table = require("./model/Table");
 const Result = require("./model/Result");
+const Entry = require("./model/Entries");
 const bot = new TelegramBot(process.env.botToken, { polling: true });
+
 bot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;
     const chatExist = await Chat.findOne({ chatId });
@@ -35,7 +37,8 @@ app.post("/api/message", async (req, res) => {
             msgID,
             type,
             resultType,
-            tableName
+            tableName,
+            prompt
         } = req.body;
 
         if (message) {
@@ -43,9 +46,19 @@ app.post("/api/message", async (req, res) => {
             const chatIds = await Chat.find({});
             const isSent = await Message.findOne({ msgID });
 
+            // save entry
+            if (prompt) {
+                const newEntry = new Entry({
+                    tableName,
+                    prompt
+                });
+                await newEntry.save();
+            }
+
             if (isSent) {
                 return res.status(200).json({ success: true });
             }
+
 
             if (resultType === "won" || resultType === "loss") {
 
