@@ -46,16 +46,26 @@ app.post("/api/message", async (req, res) => {
             // send message
             const chatIds = await Chat.find({});
             const isSent = await Message.findOne({ msgID });
-            const tableId = tableName?.replace(/ /g, "").toLowerCase()
-            const table = await Table.findOne({ tableId });
 
             if (isSent) {
                 return res.status(200).json({ success: true });
             }
 
-
+            // save entry
+            if (prompt) {
+                const newEntry = new Entry({
+                    tableName,
+                    prompt,
+                    numbers
+                });
+                await newEntry.save();
+            }
 
             if (resultType === "won" || resultType === "loss") {
+
+                const tableId = tableName?.replace(/ /g, "").toLowerCase()
+                const table = await Table.findOne({ tableId });
+
                 if (table) {
 
                     const newResult = new Result({
@@ -92,22 +102,6 @@ app.post("/api/message", async (req, res) => {
                     await newTable.save();
                     await newResult.save();
                 }
-            }
-
-
-
-            // save entry
-            if (prompt) {
-                const tableId = tableName?.replace(/ /g, "").toLowerCase()
-                const table = await Table.findOne({ tableId });
-
-                const newEntry = new Entry({
-                    tableName,
-                    prompt,
-                    numbers,
-                    trialPostion: table.trialPostion
-                });
-                await newEntry.save();
             }
 
 
