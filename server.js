@@ -106,7 +106,7 @@ app.post("/api/message", async (req, res) => {
             }
 
 
-            chatIds.slice(0, 1).forEach((chatId) => {
+            chatIds.forEach((chatId) => {
                 bot.sendMessage(chatId.chatId, message)
                     .then(async sentmessage => {
                         if (type == 'ready') {
