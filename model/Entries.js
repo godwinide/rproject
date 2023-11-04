@@ -13,6 +13,11 @@ const EntrySchema = new Schema({
         type: Array,
         required: true
     },
+    trialPostion: {
+        type: Number,
+        required: false,
+        default: 1
+    },
     sent: {
         type: Boolean,
         required: false,
