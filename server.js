@@ -53,16 +53,6 @@ app.post("/api/message", async (req, res) => {
                 return res.status(200).json({ success: true });
             }
 
-            // save entry
-            if (prompt) {
-                const newEntry = new Entry({
-                    tableName,
-                    prompt,
-                    numbers,
-                    trialPostion: table?.trialPostion || 1
-                });
-                await newEntry.save();
-            }
 
 
             if (resultType === "won" || resultType === "loss") {
@@ -102,6 +92,22 @@ app.post("/api/message", async (req, res) => {
                     await newTable.save();
                     await newResult.save();
                 }
+            }
+
+
+
+            // save entry
+            if (prompt) {
+                const tableId = tableName?.replace(/ /g, "").toLowerCase()
+                const table = await Table.findOne({ tableId });
+
+                const newEntry = new Entry({
+                    tableName,
+                    prompt,
+                    numbers,
+                    trialPostion: table.trialPostion
+                });
+                await newEntry.save();
             }
 
 
