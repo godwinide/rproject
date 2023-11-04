@@ -59,7 +59,7 @@ app.post("/api/message", async (req, res) => {
                     tableName,
                     prompt,
                     numbers,
-                    trialPostion: table.trialPostion
+                    trialPostion: table?.trialPostion || 1
                 });
                 await newEntry.save();
             }
